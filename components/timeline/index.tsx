@@ -9,6 +9,7 @@ import { DayLayer } from "./layers/day-layer"
 import { HourLayer } from "./layers/hour-layer"
 import { TimelineNavbar } from "./timeline-navbar"
 import { RealTimeClock } from "./real-time-clock"
+import { SimpleCursor } from "./simple-cursor"
 
 interface Project {
   id: string
@@ -24,6 +25,17 @@ interface TimelineProps {
 }
 
 export function Timeline({ projectId, projectStartDate, projectEndDate, project }: TimelineProps) {
+  return (
+    <TimelineContent
+      projectId={projectId}
+      projectStartDate={projectStartDate}
+      projectEndDate={projectEndDate}
+      project={project}
+    />
+  )
+}
+
+function TimelineContent({ projectId, projectStartDate, projectEndDate, project }: TimelineProps) {
   const timeline = useTimeline(projectStartDate, projectEndDate)
 
   const renderLayer = () => {
@@ -53,8 +65,10 @@ export function Timeline({ projectId, projectStartDate, projectEndDate, project 
   return (
     <div
       ref={timeline.containerRef}
-      className="w-full h-full flex items-center justify-center select-none cursor-grab active:cursor-grabbing overflow-hidden"
+      className="timeline-container w-full h-full flex items-center justify-center select-none overflow-hidden"
     >
+      <SimpleCursor />
+
       <div
         className="w-full h-full relative flex items-center justify-center perspective-1000 pt-20"
         style={{
