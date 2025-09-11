@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { format, getWeek } from "date-fns"
-import { Calendar, Clock, ArrowLeft } from "lucide-react"
+import { Calendar, Clock, ArrowLeft, AlertTriangle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
@@ -258,7 +258,33 @@ export function TimelineNavbar({
           </Popover>
         </div>
 
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Badge
+                variant="outline"
+                className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 cursor-pointer transition-colors"
+              >
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                ALPHA
+              </Badge>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <h4 className="font-medium text-sm">Alpha Product</h4>
+                </div>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>
+                    This is an alpha version with known bugs and limitations. The product is not actively maintained or
+                    developed.
+                  </p>
+                  <p className="text-xs font-mono bg-muted px-2 py-1 rounded">Version: alpha-0.0.1</p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <UserAvatar />
         </div>
       </div>
