@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { format, getWeek } from "date-fns"
-import { Calendar, Clock, ArrowLeft, AlertTriangle } from "lucide-react"
+import { Calendar, Clock, ArrowLeft, AlertTriangle, Github } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
@@ -259,6 +259,16 @@ export function TimelineNavbar({
         </div>
 
         <div className="flex-1 flex justify-end items-center gap-3">
+          <Button variant="ghost" size="sm" asChild>
+            <a
+              href="https://github.com/aAndy03/Monx_PROTOTYPE_"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Github className="h-4 w-4" />
+            </a>
+          </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Badge
@@ -279,6 +289,10 @@ export function TimelineNavbar({
                   <p>
                     This is an alpha version with known bugs and limitations. The product is not actively maintained or
                     developed.
+                  </p>
+                  <p className="text-xs">
+                    Thanks to <span className="font-medium">v0</span>, <span className="font-medium">Supabase</span>,
+                    and <span className="font-medium">shadcn/ui</span> for making this possible.
                   </p>
                   <p className="text-xs font-mono bg-muted px-2 py-1 rounded">Version: alpha-0.0.1</p>
                 </div>
