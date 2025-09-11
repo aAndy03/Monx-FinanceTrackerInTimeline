@@ -11,7 +11,7 @@ export async function signIn(prevState: any, formData: FormData) {
     return { error: "Email and password are required" }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -33,7 +33,7 @@ export async function signUp(prevState: any, formData: FormData) {
     return { error: "All fields are required" }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   try {
     const { error } = await supabase.auth.signUp({
@@ -48,22 +48,19 @@ export async function signUp(prevState: any, formData: FormData) {
     })
 
     if (error) {
-      // Check if it's a database-related error
-      if (error.message.includes("relation") || error.message.includes("table") || error.message.includes("function")) {
-        return { error: "Database not initialized. Please run the database setup script first." }
-      }
+      console.error("Supabase signup error:", error)
       return { error: error.message }
     }
 
-    return { success: true, message: "Check your email to confirm your account" }
+    return { success: true, message: "Check your email to confirm your account before signing in" }
   } catch (err) {
     console.error("Signup error:", err)
-    return { error: "Database not initialized. Please run the database setup script first." }
+    return { error: "An unexpected error occurred. Please try again." }
   }
 }
 
 export async function signOut() {
-  const supabase = createClient()
+  const supabase = await createClient()
   await supabase.auth.signOut()
   redirect("/auth/login")
 }

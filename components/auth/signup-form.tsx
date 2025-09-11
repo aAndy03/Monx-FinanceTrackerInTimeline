@@ -10,28 +10,35 @@ import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
-export default function LoginForm() {
+export default function SignupForm() {
+  const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
+          data: {
+            full_name: fullName,
+          },
+        },
       })
 
       if (error) throw error
 
-      router.push("/dashboard")
+      router.push("/auth/check-email")
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {
@@ -42,14 +49,29 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-md space-y-6 bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Welcome back</h1>
-        <p className="text-sm text-gray-600">Sign in to your account</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Create account</h1>
+        <p className="text-sm text-gray-600">Get started with your finance timeline</p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleSignup} className="space-y-4">
         {error && <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm">{error}</div>}
 
         <div className="space-y-3">
+          <div className="space-y-1">
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+            <Input
+              id="fullName"
+              name="fullName"
+              type="text"
+              placeholder="John Doe"
+              required
+              className="w-full"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+          </div>
           <div className="space-y-1">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -89,17 +111,17 @@ export default function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              Creating Account...
             </>
           ) : (
-            "Sign In"
+            "Create Account"
           )}
         </Button>
 
         <div className="text-center text-sm text-gray-600">
-          Don't have an account?{" "}
-          <Link href="/auth/sign-up" className="text-blue-600 hover:underline">
-            Sign up
+          Already have an account?{" "}
+          <Link href="/auth/login" className="text-blue-600 hover:underline">
+            Sign in
           </Link>
         </div>
       </form>

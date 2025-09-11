@@ -9,7 +9,7 @@ interface ProjectPageProps {
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const {
     data: { user },

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { ProjectGallery } from "@/components/projects/project-gallery"
 
 export default async function DashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const {
     data: { user },

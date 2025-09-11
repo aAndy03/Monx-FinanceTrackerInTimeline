@@ -10,7 +10,7 @@ import { TransactionIndicator } from "@/components/finance/transaction-indicator
 import { TransactionStatusIndicator } from "@/components/finance/transaction-status-indicator"
 import { TransactionGroupIndicator } from "@/components/finance/transaction-group-indicator"
 import { TransactionCardWithConnector } from "@/components/finance/transaction-card-with-connector"
-import { useTransactionManager } from "@/hooks/use-transaction-manager"
+import { useTimelineData } from "@/hooks/use-transaction-data"
 import type { Transaction } from "@/lib/supabase/client"
 
 type HourLayerProps = ReturnType<typeof useTimeline> & {
@@ -27,7 +27,11 @@ interface TransactionState {
 export function HourLayer(props: HourLayerProps) {
   const [showTransactionForm, setShowTransactionForm] = useState(false)
   const [transactionStates, setTransactionStates] = useState<TransactionState[]>([])
-  const { transactions, loadTransactions, updateTransactionStatus } = useTransactionManager()
+
+  const { transactions, createTransaction, updateTransactionStatus, isLoading } = useTimelineData(
+    props.focusDate,
+    "hour",
+  )
 
   const items = useMemo(() => getHourItems(props.focusDate), [props.focusDate])
   const normalizedFocus = normalizeToLevel("hour", props.focusDate)
@@ -38,18 +42,6 @@ export function HourLayer(props: HourLayerProps) {
     () => Math.min(320, Math.max(200, window.innerWidth > 0 ? window.innerWidth / 5 : 250)),
     [],
   )
-
-  useEffect(() => {
-    const loadHourTransactions = async () => {
-      const currentDate = props.focusDate
-      const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0)
-      const endOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 23, 59, 59)
-
-      await loadTransactions({ start: startOfDay, end: endOfDay })
-    }
-
-    loadHourTransactions()
-  }, [props.focusDate.toDateString(), loadTransactions]) // Use toDateString to prevent excessive reloads
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -117,7 +109,7 @@ export function HourLayer(props: HourLayerProps) {
 
       return prevStates
     })
-  }, [transactions, safeFocusIdx, props.granularZoom]) // Removed props.focusDate.getHours() to prevent excessive updates
+  }, [transactions, safeFocusIdx, props.granularZoom])
 
   const isInViewport = (minute: number) => {
     const currentHour = props.focusDate.getHours()
@@ -380,7 +372,7 @@ export function HourLayer(props: HourLayerProps) {
     )
   }
 
-  const handleTransactionCreated = (transaction: Transaction, shouldNavigate: boolean) => {
+  const handleTransactionCreated = async (transaction: Transaction, shouldNavigate: boolean) => {
     setShowTransactionForm(false)
 
     if (shouldNavigate) {
